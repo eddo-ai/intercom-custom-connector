@@ -143,11 +143,10 @@ export default function Home() {
       }
 
       let buffer = "";
-      let totalProcessed = 0;
 
       while (true) {
         const { done, value } = await reader.read();
-        
+
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
@@ -158,9 +157,8 @@ export default function Home() {
           if (line.startsWith("data: ")) {
             try {
               const data = JSON.parse(line.slice(6));
-              
+
               if (data.type === "start") {
-                totalProcessed = data.totalProcessed;
                 setStreamingStats({
                   successful: 0,
                   failed: 0,
@@ -256,11 +254,10 @@ export default function Home() {
       }
 
       let buffer = "";
-      let totalProcessed = 0;
 
       while (true) {
         const { done, value } = await reader.read();
-        
+
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
@@ -271,9 +268,8 @@ export default function Home() {
           if (line.startsWith("data: ")) {
             try {
               const data = JSON.parse(line.slice(6));
-              
+
               if (data.type === "start") {
-                totalProcessed = data.totalProcessed;
                 setStreamingStats({
                   successful: 0,
                   failed: 0,
@@ -366,39 +362,34 @@ export default function Home() {
           {currentStep !== "results" && (
             <div className="mb-8 flex items-center justify-center gap-2">
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
-                  currentStep === "upload"
-                    ? "bg-black text-white dark:bg-white dark:text-black"
-                    : "bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                }`}
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${currentStep === "upload"
+                  ? "bg-black text-white dark:bg-white dark:text-black"
+                  : "bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                  }`}
               >
                 1
               </div>
               <div className="h-1 w-12 bg-zinc-200 dark:bg-zinc-800"></div>
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
-                  currentStep === "mapping"
-                    ? "bg-black text-white dark:bg-white dark:text-black"
-                    : currentStep === "processing" || currentStep === "results"
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${currentStep === "mapping"
+                  ? "bg-black text-white dark:bg-white dark:text-black"
+                  : currentStep === "processing"
                     ? "bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
                     : "bg-zinc-100 text-zinc-400 dark:bg-zinc-900 dark:text-zinc-600"
-                }`}
+                  }`}
               >
                 2
               </div>
               <div className="h-1 w-12 bg-zinc-200 dark:bg-zinc-800"></div>
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
-                  currentStep === "processing"
-                    ? "bg-black text-white dark:bg-white dark:text-black"
-                    : currentStep === "results"
-                    ? "bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                    : "bg-zinc-100 text-zinc-400 dark:bg-zinc-900 dark:text-zinc-600"
-                }`}
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${currentStep === "processing"
+                  ? "bg-black text-white dark:bg-white dark:text-black"
+                  : "bg-zinc-100 text-zinc-400 dark:bg-zinc-900 dark:text-zinc-600"
+                  }`}
               >
                 3
               </div>
-        </div>
+            </div>
           )}
 
           {/* File Upload Section */}

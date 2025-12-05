@@ -131,7 +131,7 @@ function createIntercomEvents(
 
     // Get event name and date from event settings (event-level only)
     const eventName = eventSettings?.eventName || undefined;
-    
+
     // Combine event date and time if both provided
     let eventDate = eventSettings?.eventDate || undefined;
     if (eventSettings?.eventDate && eventSettings?.eventTime) {
@@ -315,7 +315,7 @@ export async function POST(request: NextRequest) {
 
     for (let i = 0; i < parseResult.data.length; i++) {
       const row = parseResult.data[i];
-      
+
       // Exclude rows where approval_status="invited"
       if (mapping.approval_status) {
         const approvalStatus = (row[mapping.approval_status] || "").trim().toLowerCase();
@@ -323,7 +323,7 @@ export async function POST(request: NextRequest) {
           continue; // Skip invited attendees
         }
       }
-      
+
       const attendee = parseAttendee(row, mapping);
 
       if (!attendee) {
@@ -373,7 +373,7 @@ export async function POST(request: NextRequest) {
     const stream = new ReadableStream({
       async start(controller) {
         const encoder = new TextEncoder();
-        
+
         // Send initial message
         const sendMessage = (data: object) => {
           const message = `data: ${JSON.stringify(data)}\n\n`;
