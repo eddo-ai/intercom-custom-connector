@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type {
   UploadResponse,
   ProcessingResult,
@@ -26,6 +26,7 @@ export default function Home() {
   const [wasTestMode, setWasTestMode] = useState(false);
   const [streamingResults, setStreamingResults] = useState<ProcessingResult[]>([]);
   const [streamingStats, setStreamingStats] = useState({ successful: 0, failed: 0, total: 0 });
+  const [testModeAvailable, setTestModeAvailable] = useState(false);
 
   const fieldLabels: Record<keyof ColumnMapping, string> = {
     email: "Email (required)",
@@ -38,6 +39,26 @@ export default function Home() {
     hasJoinedEvent: "Has Joined Event (boolean)",
     approval_status: "Approval Status",
   };
+
+  // Check if test mode is available and enable by default if available
+  useEffect(() => {
+    async function checkTestModeAvailability() {
+      try {
+        const response = await fetch("/api/config");
+        const data = await response.json();
+        const available = data.testModeAvailable || false;
+        setTestModeAvailable(available);
+        // Enable test mode by default if available
+        if (available) {
+          setTestMode(true);
+        }
+      } catch (err) {
+        console.error("Failed to check test mode availability:", err);
+        setTestModeAvailable(false);
+      }
+    }
+    checkTestModeAvailability();
+  }, []);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -575,26 +596,49 @@ export default function Home() {
                 </div>
 
                 {/* Test Mode Toggle */}
-                <div className="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      id="test-mode"
-                      checked={testMode}
-                      onChange={(e) => setTestMode(e.target.checked)}
-                      className="h-4 w-4 rounded border-zinc-300 text-black focus:ring-2 focus:ring-black dark:border-zinc-600 dark:text-white dark:focus:ring-white"
-                    />
-                    <label
-                      htmlFor="test-mode"
-                      className="text-sm font-medium text-black dark:text-zinc-50"
-                    >
-                      Test Mode
-                    </label>
+                {testModeAvailable ? (
+                  <div className="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="test-mode"
+                        checked={testMode}
+                        onChange={(e) => setTestMode(e.target.checked)}
+                        className="h-4 w-4 rounded border-zinc-300 text-black focus:ring-2 focus:ring-black dark:border-zinc-600 dark:text-white dark:focus:ring-white"
+                      />
+                      <label
+                        htmlFor="test-mode"
+                        className="text-sm font-medium text-black dark:text-zinc-50"
+                      >
+                        Test Mode
+                      </label>
+                    </div>
+                    <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+                      When enabled, uses INTERCOM_ACCESS_TOKEN_TEST and replaces email domains with example.com
+                    </p>
                   </div>
-                  <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
-                    When enabled, uses INTERCOM_ACCESS_TOKEN_TEST and replaces email domains with example.com
-                  </p>
-                </div>
+                ) : (
+                  <div className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-800/50">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="test-mode"
+                        checked={false}
+                        disabled
+                        className="h-4 w-4 rounded border-zinc-300 text-zinc-300 dark:border-zinc-600 dark:text-zinc-700"
+                      />
+                      <label
+                        htmlFor="test-mode"
+                        className="text-sm font-medium text-zinc-500 dark:text-zinc-500"
+                      >
+                        Test Mode
+                      </label>
+                    </div>
+                    <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+                      Test mode is not available. Please set <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">INTERCOM_ACCESS_TOKEN_TEST</code> in your <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">.env.local</code> file to enable test mode.
+                    </p>
+                  </div>
+                )}
 
                 <div className="mt-6 flex gap-4">
                   <button
