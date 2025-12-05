@@ -17,12 +17,7 @@ import { publishEventsWithProgress } from "@/lib/intercom";
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 minutes for processing large files
 
-/**
- * Normalize CSV column names to handle variations
- */
-function normalizeColumnName(column: string): string {
-  return column.toLowerCase().trim().replace(/\s+/g, "");
-}
+
 
 /**
  * Extract attendee data from CSV row using column mapping
@@ -234,7 +229,7 @@ export async function POST(request: NextRequest) {
             }
           );
         }
-      } catch (e) {
+      } catch {
         return new Response(
           JSON.stringify({ type: "error", error: "Invalid column mapping format" }),
           {
@@ -258,7 +253,7 @@ export async function POST(request: NextRequest) {
     if (eventSettingsJson) {
       try {
         eventSettings = JSON.parse(eventSettingsJson) as EventSettings;
-      } catch (e) {
+      } catch {
         console.warn("Failed to parse event settings, continuing without them");
       }
     }
